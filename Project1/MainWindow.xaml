@@ -1,0 +1,159 @@
+﻿<Window x:Class="Project1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Project1"
+        mc:Ignorable="d"
+        Title="Football LiveScore" Height="520" Width="920"
+        Loaded="Window_Loaded">
+
+    <Window.Resources>
+        <!-- Simple navigation button style -->
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="0,8,0,0"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Match list item template -->
+        <DataTemplate x:Key="MatchTemplate">
+            <Border BorderBrush="#DDD" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="110" />
+                        <ColumnDefinition Width="70" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="{Binding DisplayTeams}" FontSize="16" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding League}" Opacity="0.7"/>
+                        <TextBlock Text="{Binding DisplayKickoff}" Opacity="0.7"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="1" Text="{Binding DisplayScore}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               FontSize="20" FontWeight="Bold"/>
+
+                    <TextBlock Grid.Column="2" Text="{Binding DisplayStatus}"
+                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid Margin="18">
+        <TabControl x:Name="tabMain">
+
+            <!-- 1) MAIN MENU -->
+            <TabItem Header="Menu">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="FOOTBALL LIVE SCORE" FontSize="28" FontWeight="Bold" Margin="0,0,0,12"/>
+                        <TextBlock Text="View live scores, fixtures and match details." FontSize="14" Opacity="0.75"/>
+                        <Border Height="220" Margin="0,20,0,0" CornerRadius="10" BorderBrush="#DDD" BorderThickness="1">
+                            <TextBlock Text="(Image / Banner later)"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.6"/>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <Button Content="Live Matches" Style="{StaticResource NavButtonStyle}" Click="BtnGoLive_Click"/>
+                        <Button Content="Fixtures / Results" Style="{StaticResource NavButtonStyle}" Click="BtnGoFixtures_Click"/>
+                        <Button Content="Exit" Style="{StaticResource NavButtonStyle}" Click="BtnExit_Click"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- 2) LIVE MATCHES + DETAILS -->
+            <TabItem Header="Live">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Live Matches" FontSize="24" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="League:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox x:Name="cmbLiveLeague" Width="180" SelectionChanged="CmbLiveLeague_SelectionChanged"/>
+                            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="18,0,8,0"/>
+                            <TextBox x:Name="txtLiveSearch" Width="200" TextChanged="TxtLiveSearch_TextChanged"/>
+                            <Button Content="Back" Margin="18,0,0,0" Click="BtnBackToMenu_Click"/>
+                        </StackPanel>
+
+                        <ListBox x:Name="lstLive"
+                                 ItemTemplate="{StaticResource MatchTemplate}"
+                                 SelectionChanged="LstMatches_SelectionChanged"/>
+                    </StackPanel>
+
+                    <Border Grid.Column="2" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Padding="12">
+                        <StackPanel>
+                            <TextBlock Text="Match Details" FontSize="22" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <TextBlock x:Name="txtDetailsTitle" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="txtDetailsInfo" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                            <TextBlock Text="Events" FontSize="16" FontWeight="Bold" Margin="0,14,0,6"/>
+                            <ListBox x:Name="lstEvents"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- 3) FIXTURES/RESULTS + DETAILS -->
+            <TabItem Header="Fixtures">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Fixtures / Results" FontSize="24" FontWeight="Bold" Margin="0,0,0,12"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <RadioButton x:Name="rbFixtures" Content="Fixtures" IsChecked="True"
+                                         Checked="RbMode_Checked" Margin="0,0,14,0"/>
+                            <RadioButton x:Name="rbResults" Content="Results"
+                                         Checked="RbMode_Checked" Margin="0,0,18,0"/>
+
+                            <TextBlock Text="League:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <ComboBox x:Name="cmbFixLeague" Width="180" SelectionChanged="CmbFixLeague_SelectionChanged"/>
+
+                            <TextBlock Text="Search:" VerticalAlignment="Center" Margin="18,0,8,0"/>
+                            <TextBox x:Name="txtFixSearch" Width="200" TextChanged="TxtFixSearch_TextChanged"/>
+
+                            <Button Content="Back" Margin="18,0,0,0" Click="BtnBackToMenu_Click"/>
+                        </StackPanel>
+
+                        <ListBox x:Name="lstFixtures"
+                                 ItemTemplate="{StaticResource MatchTemplate}"
+                                 SelectionChanged="LstMatches_SelectionChanged"/>
+                    </StackPanel>
+
+                    <Border Grid.Column="2" BorderBrush="#DDD" BorderThickness="1" CornerRadius="8" Padding="12">
+                        <StackPanel>
+                            <TextBlock Text="Match Details" FontSize="22" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <TextBlock x:Name="txtDetailsTitle2" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="txtDetailsInfo2" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                            <TextBlock Text="Events" FontSize="16" FontWeight="Bold" Margin="0,14,0,6"/>
+                            <ListBox x:Name="lstEvents2"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
